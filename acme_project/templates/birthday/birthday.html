@@ -1,16 +1,6 @@
 <!-- templates/birthday/birthday.html -->
 {% extends "base.html" %}
 
-<!-- Старая версия кода:
-{% block content %}
-  <form>
-    <table>
-    {{ form }}
-    </table>
-    <input type="submit" value="Submit">
-  </form>
-{% endblock %} -->
-
 {% block content %}
   <form>
     {{ form.as_p }}
