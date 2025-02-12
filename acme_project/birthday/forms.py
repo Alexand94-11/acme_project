@@ -30,5 +30,7 @@ class BirthdayForm(forms.ModelForm):
         fields = '__all__'
         # Указываем, что для поля с ДР используется виджет.
         widgets = {
-            'birthday': forms.DateInput(attrs={'type': 'date'})
+            'birthday': forms.DateInput(
+                format="%Y-%m-%d", attrs={'type': 'date'}
+            )
         }
