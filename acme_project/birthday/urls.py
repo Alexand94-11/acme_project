@@ -8,6 +8,8 @@ urlpatterns = [
     path('', views.birthday, name='create'),
     # Маршрут для вывода списка ДР.
     path('list/', views.birthday_list, name='list'),
-    # Маршрут для редактирования записей.
+    # Путь для редактирования записей.
     path('<int:pk>/edit/', views.birthday, name='edit'),
+    # Маршрут для удаления записи.
+    path('<int:pk>/delete/', views.delete_birthday, name='delete'),
 ]
