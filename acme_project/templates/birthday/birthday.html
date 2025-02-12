@@ -1,15 +1,28 @@
 <!-- templates/birthday/birthday.html -->
 {% extends "base.html" %}
+<!-- Подключаем библиотеку django_bootstrap5. -->
+{% load django_bootstrap5 %}
 
 {% block content %}
-  <form>
-    {{ form.as_p }}
-    <input type="submit" value="Submit">
-  </form>
+  <!-- Добавим блоку с классом card класс col-4, чтобы
+    вложенный блок занимал половину родительского. -->
+  <div class="card col-4">
+    <div class="card-header">
+      Калькулятор ожидания дня рождения
+    </div>
+    <div class="card-body">
+      <form>
+        <!-- Выводим поля формы с помощью специального тега. -->
+        {% bootstrap_form form %}
+        <!-- Добавляем кнопку отправки данных. -->
+        {% bootstrap_button button_type="submit" content="Отправить" %}
+      </form>
+    </div>
+  </div>
   <!-- Присваиваем переменной data объект request.GET -->
   {% with data=request.GET %}
     <!-- В дальнейшем используем имя data вместо request.GET 
-      + добавляем проверку валидности данных в введённой форме -->
+      + добавляем проверку валидности данных в введённой форме. -->
     {% if form.is_valid %}
       <h2>Привет, {{ data.first_name }} {{ data.last_name }}</h2>
         <!-- Если до дня рождения 0 дней... -->
@@ -23,6 +36,6 @@
       {% endif %}
     {% endif %}
   <!-- Когда заканчивается область шаблона, где нужна переменная, 
-    закрываем тег with -->
+    закрываем тег with. -->
   {% endwith %}
 {% endblock %}
