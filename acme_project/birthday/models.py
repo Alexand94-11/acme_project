@@ -11,6 +11,8 @@ class Birthday(models.Model):
     )
     # Добавляем валидатор для проверки возраста.
     birthday = models.DateField('Дата рождения', validators=(real_age,))
+    # Добавляем изображения, которые будем загружать в отдельную папку.
+    image = models.ImageField('Фото', upload_to='birthdays_images', blank=True)
 
     class Meta:
         # Проверка на уникальность записи:

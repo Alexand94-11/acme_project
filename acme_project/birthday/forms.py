@@ -48,8 +48,8 @@ class BirthdayForm(forms.ModelForm):
         return first_name.split()[0]
 
     def clean(self):
-        # Вызываем родительский метод clean, чтобы сработала проверка
-        # и в форме BirthdayForm.
+        # Вызываем родительский метод super().clean(), чтобы сработала проверка
+        # на уникальность записи и в форме BirthdayForm.
         super().clean()
         # Получаем имя и фамилию из очищенных полей формы.
         first_name = self.cleaned_data['first_name']

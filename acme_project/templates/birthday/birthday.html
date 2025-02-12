@@ -24,7 +24,7 @@
         Калькулятор ожидания дня рождения
       </div>
       <div class="card-body">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
           <!-- Добавляем тег csrf_token. Без него POST-запрос будет отклонён. -->
           {% csrf_token %}
           <!-- Добавляем проверку, нужно ли выводить форму с возможностью редактирования. -->
