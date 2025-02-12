@@ -1,5 +1,5 @@
 # birthday/views.py
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 # Импортируем класс BirthdayForm, чтобы создать экземпляр формы.
 from .forms import BirthdayForm
@@ -9,7 +9,8 @@ from .utils import calculate_birthday_countdown
 from .models import Birthday
 
 
-def birthday(request):
+# Добавим опциональный параметр pk для редактирования объекта.
+def birthday(request, pk=None):
     """
     # Если есть параметры GET-запроса...
     if request.GET:
@@ -25,8 +26,19 @@ def birthday(request):
         # То просто создаём пустую форму.
         form = BirthdayForm()
     """
-    # Тот же код, но с использованием трюка:
-    form = BirthdayForm(request.POST or None)
+    # Если в запросе указан pk (если получен запрос на редактирование объекта):
+    if pk is not None:
+        # Получаем объект модели или выбрасываем 404 ошибку.
+        instance = get_object_or_404(Birthday, pk=pk)
+    # Если в запросе не указан pk
+    # (если получен запрос к странице создания записи):
+    else:
+        # Связывать форму с объектом не нужно, установим значение None.
+        instance = None
+    # Передаём в форму либо данные из запроса, либо None.
+    # В случае редактирования прикрепляем объект модели.
+    # Тот же код(закомментированный), но с использованием трюка:
+    form = BirthdayForm(request.POST or None, instance=instance)
     # Создаём словарь контекста сразу после инициализации формы.
     context = {'form': form}
     # Если форма валидна...
@@ -50,3 +62,23 @@ def birthday_list(request):
     # Передаём их в контекст шаблона.
     context = {'birthdays': birthdays}
     return render(request, 'birthday/birthday_list.html', context)
+
+
+"""
+def edit_birthday(request, pk):
+    # Находим запрошенный объект для редактирования по первичному ключу
+    # или возвращаем 404 ошибку, если такого объекта нет.
+    instance = get_object_or_404(Birthday, pk=pk)
+    # Связываем форму с найденным объектом: передаём его в аргумент instance.
+    form = BirthdayForm(request.POST or None, instance=instance)
+    # Всё остальное без изменений.
+    context = {'form': form}
+    # Сохраняем данные, полученные из формы, и отправляем ответ:
+    if form.is_valid():
+        form.save()
+        birthday_countdown = calculate_birthday_countdown(
+            form.cleaned_data['birthday']
+        )
+        context.update({'birthday_countdown': birthday_countdown})
+    return render(request, 'birthday/birthday.html', context)
+"""

@@ -7,6 +7,11 @@
       <div> <!-- Текст обернём в отдельный вложенный div -->
         {{ birthday.first_name }} {{ birthday.last_name }} - {{ birthday.birthday }}
       </div>
+      <!-- Ссылку на редактирование тоже обернём в div; адрес ссылки
+        указываем через namespace:name -->
+      <div>
+        <a href="{% url 'birthday:edit' birthday.id %}">Изменить запись</a>
+      </div>
       {% if not forloop.last %}
         <hr>
       {% endif %}
