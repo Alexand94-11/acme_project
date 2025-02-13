@@ -9,6 +9,68 @@ from .utils import calculate_birthday_countdown
 from .models import Birthday
 # Импортируем класс пагинатора для постраничного вывода.
 from django.core.paginator import Paginator
+# Импортируем CBV-классы.
+from django.views.generic import ListView, CreateView, UpdateView
+# Импортируем функцию, которая возвращает строку с URL нужной страницы
+# при непосредственном обращении к CBV во время работы веб-сервера
+from django.urls import reverse_lazy
+
+
+# Наследуем класс от встроенного ListView:
+class BirthdayListView(ListView):
+    """Заменяет функцию birthday_list."""
+    # Указываем модель, с которой работает CBV...
+    model = Birthday
+    # ...сортировку, которая будет применена при выводе списка объектов:
+    ordering = 'id'
+    # ...и даже настройки пагинации:
+    paginate_by = 10
+
+
+"""
+class BirthdayCreateView(CreateView):
+    # Заменяет функцию birthday. Используется для создания записи.
+    # Указываем модель, с которой работает CBV...
+    model = Birthday
+    # Этот класс сам может создать форму на основе модели!
+    # Нет необходимости отдельно создавать форму через ModelForm.
+    # Указываем поля, которые должны быть в форме:
+    # fields = '__all__'
+    # Указываем имя формы:
+    form_class = BirthdayForm
+    # Явным образом указываем шаблон:
+    template_name = 'birthday/birthday.html'
+    # Указываем namespace:name страницы, куда будет перенаправлен пользователь
+    # после создания объекта:
+    success_url = reverse_lazy('birthday:list')
+
+
+class BirthdayUpdateView(UpdateView):
+    # Заменяет функцию birthday. Используется для редактирования записи.
+    model = Birthday
+    form_class = BirthdayForm
+    template_name = 'birthday/birthday.html'
+    success_url = reverse_lazy('birthday:list')
+"""
+
+
+# Создаём миксин, чтобы не дублировать код при создании CBV-классов.
+class BirthdayMixin:
+    model = Birthday
+    form_class = BirthdayForm
+    template_name = 'birthday/birthday.html'
+    success_url = reverse_lazy('birthday:list')
+
+
+# Добавляем миксин первым по списку родительских классов.
+class BirthdayCreateView(BirthdayMixin, CreateView):
+    # Не нужно описывать атрибуты: все они унаследованы от BirthdayMixin.
+    pass
+
+
+class BirthdayUpdateView(BirthdayMixin, UpdateView):
+    # И здесь все атрибуты наследуются от BirthdayMixin.
+    pass
 
 
 # Добавим опциональный параметр pk для редактирования объекта.
