@@ -7,6 +7,8 @@ from .forms import BirthdayForm
 from .utils import calculate_birthday_countdown
 # Импортируем модель дней рождения для работы ф-ции birthday_list.
 from .models import Birthday
+# Импортируем класс пагинатора для постраничного вывода.
+from django.core.paginator import Paginator
 
 
 # Добавим опциональный параметр pk для редактирования объекта.
@@ -62,10 +64,23 @@ def birthday(request, pk=None):
 
 
 def birthday_list(request):
-    # Получаем все объекты модели Birthday из БД.
-    birthdays = Birthday.objects.all()
+    # Получаем список всех объектов с сортировкой по id.
+    birthdays = Birthday.objects.order_by('id')
+    # Создаём объект пагинатора с количеством 10 записей на страницу.
+    paginator = Paginator(birthdays, 10)
+    """
     # Передаём их в контекст шаблона.
     context = {'birthdays': birthdays}
+    """
+    # Получаем из запроса значение параметра page.
+    page_number = request.GET.get('page')
+    # Получаем запрошенную страницу пагинатора.
+    # Если параметра page нет в запросе или его значение не приводится к числу,
+    # вернётся первая страница.
+    page_obj = paginator.get_page(page_number)
+    # Вместо полного списка объектов передаём в контекст
+    # объект страницы пагинатора
+    context = {'page_obj': page_obj}
     return render(request, 'birthday/birthday_list.html', context)
 
 
