@@ -10,7 +10,7 @@ from .models import Birthday
 # Импортируем класс пагинатора для постраничного вывода.
 from django.core.paginator import Paginator
 # Импортируем CBV-классы.
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 # Импортируем функцию, которая возвращает строку с URL нужной страницы
 # при непосредственном обращении к CBV во время работы веб-сервера
 from django.urls import reverse_lazy
@@ -71,6 +71,39 @@ class BirthdayCreateView(BirthdayMixin, CreateView):
 class BirthdayUpdateView(BirthdayMixin, UpdateView):
     # И здесь все атрибуты наследуются от BirthdayMixin.
     pass
+
+
+class BirthdayDeleteView(DeleteView):
+    """Заменяет функцию delete_birthday."""
+    model = Birthday
+    # Убираем вызов шаблона, т.к. используется свой шаблон с ожидаемым именем.
+    # template_name = 'birthday/birthday.html'
+    success_url = reverse_lazy('birthday:list')
+
+
+"""
+# Вариант компоновки кода с 2 миксинами.
+class BirthdayMixin:
+    model = Birthday
+    success_url = reverse_lazy('birthday:list')
+
+
+class BirthdayFormMixin:
+    form_class = BirthdayForm
+    template_name = 'birthday/birthday.html'
+
+
+class BirthdayCreateView(BirthdayMixin, BirthdayFormMixin, CreateView):
+    pass
+
+
+class BirthdayUpdateView(BirthdayMixin, BirthdayFormMixin, UpdateView):
+    pass
+
+
+class BirthdayDeleteView(BirthdayMixin, DeleteView):
+    pass
+"""
 
 
 # Добавим опциональный параметр pk для редактирования объекта.

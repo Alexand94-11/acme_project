@@ -17,6 +17,8 @@ urlpatterns = [
     # path('<int:pk>/edit/', views.birthday, name='edit'),
     # Путь для редактирования записи с использованием CBV-класса:
     path('<int:pk>/edit/', views.BirthdayUpdateView.as_view(), name='edit'),
-    # Маршрут для удаления записи.
-    path('<int:pk>/delete/', views.delete_birthday, name='delete'),
+    # Маршрут для удаления записи:
+    # path('<int:pk>/delete/', views.delete_birthday, name='delete'),
+    # Маршрут для удаления записи с использованием CBV-класса:
+    path('<int:pk>/delete/', views.BirthdayDeleteView.as_view(), name='delete'),
 ]
