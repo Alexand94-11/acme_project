@@ -13,6 +13,8 @@ urlpatterns = [
     # path('list/', views.birthday_list, name='list'),
     # Маршрут для вывода списка ДР с использованием CBV-класса:
     path('list/', views.BirthdayListView.as_view(), name='list'),
+    # Путь для отображения отдельной записи:
+    path('<int:pk>/', views.BirthdayDetailView.as_view(), name='detail'),
     # Путь для редактирования записи с использованием view-функции:
     # path('<int:pk>/edit/', views.birthday, name='edit'),
     # Путь для редактирования записи с использованием CBV-класса:
