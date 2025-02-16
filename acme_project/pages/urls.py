@@ -5,5 +5,7 @@ from . import views
 app_name = 'pages'
 
 urlpatterns = [
-    path('', views.homepage, name='homepage'),
+    # Т.к. вместо view-функции используется класс, убираем вызов функции:
+    # path('', views.homepage, name='homepage'),
+    path('', views.HomePage.as_view(), name='homepage'),
 ]
