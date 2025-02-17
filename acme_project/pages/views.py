@@ -3,8 +3,6 @@
 # Импортируем класс TemplateView, чтобы унаследоваться от него.
 from django.views.generic import TemplateView
 
-from django.views.generic import TemplateView
-
 from birthday.models import Birthday
 
 
