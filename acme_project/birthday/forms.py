@@ -3,8 +3,8 @@ from django import forms
 # Импортируем класс ошибки валидации.
 from django.core.exceptions import ValidationError
 
-# Импортируем класс модели Birthday.
-from .models import Birthday
+# Импортируем классы моделей Birthday, Congratulation
+from .models import Birthday, Congratulation
 
 # Импорт функции для отправки почты.
 from django.core.mail import send_mail
@@ -73,3 +73,10 @@ class BirthdayForm(forms.ModelForm):
             raise ValidationError(
                 'Мы тоже любим Битлз, но введите, пожалуйста, настоящее имя!'
             )
+
+
+class CongratulationForm(forms.ModelForm):
+
+    class Meta:
+        model = Congratulation
+        fields = ('text',)
