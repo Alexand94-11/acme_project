@@ -24,3 +24,6 @@ urlpatterns = [
         name='registration',
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Переопределяем заготовленную view-функцию/хендлер.
+handler404 = 'core.views.page_not_found'
