@@ -35,7 +35,9 @@ class BirthdayForm(forms.ModelForm):
         # Указываем модель, на основе которой должна строиться форма.
         model = Birthday
         # Указываем, что надо отобразить все поля.
-        fields = '__all__'
+        # fields = '__all__'
+        # Добавляем все поля, кроме поля "автор".
+        exclude = ('author',)
         # Указываем, что для поля с ДР используется виджет.
         widgets = {
             'birthday': forms.DateInput(

@@ -15,6 +15,8 @@ urlpatterns = [
     path('list/', views.BirthdayListView.as_view(), name='list'),
     # Путь для отображения отдельной записи:
     path('<int:pk>/', views.BirthdayDetailView.as_view(), name='detail'),
+    # Маршрут для запроса авторизации:
+    path('login_only/', views.simple_view),
     # Путь для редактирования записи с использованием view-функции:
     # path('<int:pk>/edit/', views.birthday, name='edit'),
     # Путь для редактирования записи с использованием CBV-класса:

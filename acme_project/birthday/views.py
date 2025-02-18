@@ -2,11 +2,23 @@
 from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView
 )
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 
 from .forms import BirthdayForm
 from .models import Birthday
 from .utils import calculate_birthday_countdown
+
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+
+# Импортируем класс ошибки (в данном случае - 403).
+from django.core.exceptions import PermissionDenied    
+
+
+@login_required
+def simple_view(request):
+    return HttpResponse('Страница для залогиненных пользователей!')
 
 
 class BirthdayListView(ListView):
@@ -15,17 +27,55 @@ class BirthdayListView(ListView):
     paginate_by = 10
 
 
-class BirthdayCreateView(CreateView):
+class BirthdayCreateView(LoginRequiredMixin, CreateView):
+    model = Birthday
+    form_class = BirthdayForm
+
+    # Переопределяем метод валидации, чтобы передавать объект пользователя
+    # в поле объекта формы.
+    def form_valid(self, form):
+        # Присвоить полю author объект пользователя из запроса.
+        form.instance.author = self.request.user
+        # Продолжить валидацию, описанную в форме.
+        return super().form_valid(form)
+
+
+"""
+# Добавляем миксин для тестирования пользователей, обращающихся к объекту.
+# Класс UserPassesTestMixin унаследован от AccessMixin, который по умолчанию
+# переадресует анонимных пользователей на страницу логина. Поэтому при
+# использовании UserPassesTestMixin миксин LoginRequiredMixin можно
+# не использовать.
+class BirthdayUpdateView(UserPassesTestMixin, UpdateView):
+    model = Birthday
+    form_class = BirthdayForm
+
+    # Определяем метод test_func() для миксина UserPassesTestMixin:
+    def test_func(self):
+        # Получаем текущий объект.
+        object = self.get_object()
+        # Метод вернёт True или False.
+        # Если пользователь - автор объекта, то тест будет пройден.
+        # Если нет, то будет вызвана ошибка 403.
+        return object.author == self.request.user
+"""
+
+
+# Описываем собственный миксин, унаследованный от UserPassesTestMixin, чтобы
+# добавить его в нужные классы и не загромождать код.
+class OnlyAuthorMixin(UserPassesTestMixin):
+
+    def test_func(self):
+        object = self.get_object()
+        return object.author == self.request.user
+
+
+class BirthdayUpdateView(OnlyAuthorMixin, UpdateView):
     model = Birthday
     form_class = BirthdayForm
 
 
-class BirthdayUpdateView(UpdateView):
-    model = Birthday
-    form_class = BirthdayForm
-
-
-class BirthdayDeleteView(DeleteView):
+class BirthdayDeleteView(OnlyAuthorMixin, DeleteView):
     model = Birthday
     success_url = reverse_lazy('birthday:list')
 
@@ -206,7 +256,14 @@ def birthday(request, pk=None):
     # Если форма валидна...
     if form.is_valid():
         # ...сохраняем данные из формы в БД:
-        form.save()
+        # form.save()
+        # Создаем объект модели без его сохранения.
+        instance = form.save(commit=False)
+        # Присваиваем полю объекта "author" нужное значение.
+        instance.author = request.user
+        # Сохраняем объект модели в БД(сохраняем именно объект модели, а не
+        # форму, т.к. значение поля author записано именно в объект модели)
+        instance.save()
         # ...вызываем функцию подсчёта дней:
         birthday_countdown = calculate_birthday_countdown(
             # ...и передаём в неё дату из словаря cleaned_data.
@@ -243,7 +300,15 @@ def birthday_list(request):
 def edit_birthday(request, pk):
     # Находим запрошенный объект для редактирования по первичному ключу
     # или возвращаем 404 ошибку, если такого объекта нет.
+    # При поиске объекта дополнительно указываем текущего пользователя.
+    # instance = get_object_or_404(Birthday, pk=pk, author=request.user)
+    # В этом варианте возвращаем другую ошибку(не 404, а 403).
+    # Получаем нужный объект.
     instance = get_object_or_404(Birthday, pk=pk)
+    # Проверяем, кто автор объекта.
+    if instance.author != request.user:
+        # Здесь может быть как вызов ошибки, так и редирект на нужную страницу.
+        raise PermissionDenied
     # Связываем форму с найденным объектом: передаём его в аргумент instance.
     form = BirthdayForm(request.POST or None, instance=instance)
     # Всё остальное без изменений.
