@@ -24,6 +24,12 @@ class Birthday(models.Model):
     author = models.ForeignKey(
         User, verbose_name='Автор записи', on_delete=models.CASCADE, null=True
     )
+    tags = models.ManyToManyField(
+        'Tag',
+        verbose_name='Теги',
+        blank=True,
+        help_text='Удерживайте Ctrl для выбора нескольких вариантов'
+    )
 
     class Meta:
         # Проверка на уникальность записи:
@@ -52,3 +58,10 @@ class Congratulation(models.Model):
 
     class Meta:
         ordering = ('created_at',)
+
+
+class Tag(models.Model):
+    tag = models.CharField('Тег', max_length=20)
+
+    def __str__(self):
+        return self.tag

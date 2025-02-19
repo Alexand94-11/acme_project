@@ -114,13 +114,16 @@ class BirthdayUpdateView(UserPassesTestMixin, UpdateView):
 """
 
 
+ADMIN_LOGIN = 'Alexander'
+
+
 # Описываем собственный миксин, унаследованный от UserPassesTestMixin, чтобы
 # добавить его в нужные классы и не загромождать код.
 class OnlyAuthorMixin(UserPassesTestMixin):
 
     def test_func(self):
         object = self.get_object()
-        return object.author == self.request.user
+        return object.author == self.request.user or ADMIN_LOGIN
 
 
 class BirthdayUpdateView(OnlyAuthorMixin, UpdateView):
